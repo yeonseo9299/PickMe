@@ -3,86 +3,94 @@
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const CATEGORIES = ['음식', '쇼핑', '여가', '기타'];
+
 export default function ChoiceForm() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('음식');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState<{ name: string; category: string }[]>([]);
+  const [message, setMessage] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const addItem = () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setMessage('선택지를 입력해주세요.');
+      return;
+    }
+    if (trimmed.length > 50) {
+      setMessage('선택지는 50자 이하로 입력해주세요.');
+      return;
+    }
+    setItems((prev) => [...prev, { name: trimmed, category }]);
+    setName('');
+    setMessage('');
+  };
+
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const save = async (event: FormEvent) => {
     event.preventDefault();
-    setError('');
-
-    if (!name.trim()) {
-      setError('선택지를 입력해주세요.');
+    if (items.length === 0) {
+      setMessage('선택지를 하나 이상 추가해주세요.');
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
+    setMessage('');
+
     try {
-      const response = await fetch('/api/choices', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'demo-user', name, category }),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message ?? '선택지 저장에 실패했습니다.');
-        return;
+      for (const item of items) {
+        const response = await fetch('/api/choices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || '저장에 실패했습니다.');
       }
-
       router.push('/choices');
-      router.refresh();
-    } catch {
-      setError('네트워크 오류가 발생했습니다.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '선택지 저장에 실패했습니다.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
-  }
+  };
 
   return (
-    <form className="card form" onSubmit={submit}>
-      <h1 className="title">선택지 등록</h1>
-      <p className="muted">결정하고 싶은 선택지를 하나 추가해보세요.</p>
+    <section className="card form">
+      <h1>선택지 등록</h1>
+      <p className="muted">카테고리를 선택하고 고민되는 선택지를 추가하세요.</p>
+      <form onSubmit={save}>
+        <div className="field">
+          <label className="label" htmlFor="category">카테고리</label>
+          <select id="category" className="select" value={category} onChange={(e) => setCategory(e.target.value)}>
+            {CATEGORIES.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="name">선택지 이름</label>
+          <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="예: 김치찌개" />
+        </div>
+        <button type="button" className="secondary" onClick={addItem} style={{ marginTop: 12 }}>선택지 추가</button>
 
-      <div className="field">
-        <label className="label" htmlFor="name">
-          선택지 이름
-        </label>
-        <input
-          id="name"
-          className="input"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          maxLength={50}
-          placeholder="예: 피자"
-        />
-      </div>
+        <div className="list">
+          {items.map((item, index) => (
+            <div className="item" key={`${item.name}-${index}`}>
+              <span><strong>{item.name}</strong> <span className="muted">· {item.category}</span></span>
+              <button type="button" className="smallButton danger" onClick={() => removeItem(index)}>삭제</button>
+            </div>
+          ))}
+        </div>
 
-      <div className="field">
-        <label className="label" htmlFor="category">
-          카테고리
-        </label>
-        <select
-          id="category"
-          className="select"
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-        >
-          <option>음식</option>
-          <option>쇼핑</option>
-          <option>여가</option>
-          <option>기타</option>
-        </select>
-      </div>
-
-      {error && <p className="error">{error}</p>}
-
-      <button className="primary" type="submit" disabled={loading} style={{ marginTop: 18 }}>
-        {loading ? '저장 중...' : '저장하기'}
-      </button>
-    </form>
+        {message && <p className="error">{message}</p>}
+        <button className="primary" type="submit" disabled={saving} style={{ marginTop: 20 }}>
+          {saving ? '저장 중...' : '저장하기'}
+        </button>
+      </form>
+    </section>
   );
 }

@@ -33,3 +33,13 @@ button { cursor:pointer; border:0; }
 .resultName { font-size:38px; font-weight:800; margin:20px 0; }
 .error { color:#c62828; margin-top:12px; }
 @media (max-width:640px){ .hero h1{font-size:36px}.navLinks{gap:6px}.navLink{padding:8px 10px}.item{align-items:flex-start;flex-direction:column}.itemActions{width:100%} }
+.pageHeader { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px; }
+.categoryTabs { display:flex; gap:8px; flex-wrap:wrap; margin:20px 0; }
+.categoryTab { padding:10px 14px; border:1px solid var(--border); background:#fff; border-radius:999px; }
+.categoryTab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.decisionTabs { justify-content:center; }
+.choicePreview { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin:16px 0; }
+.choiceChip { padding:8px 12px; background:#f1f2f6; border-radius:999px; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+@media (max-width:640px){ .pageHeader{align-items:flex-start; flex-direction:column}.nav{align-items:flex-start; gap:12px; flex-direction:column} }
+.authCard{max-width:620px;margin:50px auto}.authSwitch{text-align:center;margin-top:18px}.authSwitch a{color:var(--primary);font-weight:700}.userWelcome{text-align:center;margin-top:20px}.navLinks{flex-wrap:wrap}

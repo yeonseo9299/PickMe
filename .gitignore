@@ -5,3 +5,7 @@ out/
 !.env.example
 npm-debug.log*
 .DS_Store
+
+
+.vercel
+.env*

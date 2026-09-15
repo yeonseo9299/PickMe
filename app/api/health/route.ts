@@ -21,7 +21,6 @@ export async function GET() {
       {
         connected: false,
         message: 'MongoDB 연결에 실패했습니다.',
-        detail: process.env.NODE_ENV === 'development' && error instanceof Error ? error.message : undefined,
       },
       { status: 500 },
     );
