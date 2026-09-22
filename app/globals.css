@@ -43,3 +43,10 @@ button { cursor:pointer; border:0; }
 button:disabled { opacity:.5; cursor:not-allowed; }
 @media (max-width:640px){ .pageHeader{align-items:flex-start; flex-direction:column}.nav{align-items:flex-start; gap:12px; flex-direction:column} }
 .authCard{max-width:620px;margin:50px auto}.authSwitch{text-align:center;margin-top:18px}.authSwitch a{color:var(--primary);font-weight:700}.userWelcome{text-align:center;margin-top:20px}.navLinks{flex-wrap:wrap}
+
+.navButton { color:var(--text); }
+.guestNote { text-align:center; margin-top:18px; font-size:14px; }
+
+.logoutButton { background:#e53935 !important; border-color:#e53935 !important; color:#fff !important; }
+.logoutButton:hover { background:#c62828 !important; border-color:#c62828 !important; }
+.homeLogout { margin-top:12px; }
